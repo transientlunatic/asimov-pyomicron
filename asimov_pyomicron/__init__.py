@@ -8,7 +8,7 @@ import warnings
 
 try:
     from asimov import config as asimov_config
-except Exception:
+except (ImportError, ModuleNotFoundError):
     asimov_config = None
 
 from asimov.pipeline import Pipeline
@@ -28,7 +28,7 @@ class PyOmicron(Pipeline):
     try:
         _template_path = resources.files(__name__).joinpath("omicron.ini")
         config_template = str(_template_path)
-    except Exception:
+    except (ImportError, AttributeError, FileNotFoundError):
         # Fallback: relative path within the package
         config_template = os.path.join(os.path.dirname(__file__), "omicron.ini")
     
@@ -172,8 +172,8 @@ class PyOmicron(Pipeline):
                 )
                 schedd = htcondor.Schedd(schedulers)
             else:
-                raise Exception("No asimov config available")
-        except Exception:
+                raise RuntimeError("No asimov config available")
+        except (RuntimeError, AttributeError, KeyError):
             schedd = htcondor.Schedd()
 
         with schedd.transaction() as txn:
@@ -242,7 +242,7 @@ class PyOmicron(Pipeline):
                 try:
                     with open(fpath, "r") as fh:
                         logs[fname] = fh.read()
-                except Exception:
+                except (IOError, OSError, UnicodeDecodeError):
                     continue
         return logs
 

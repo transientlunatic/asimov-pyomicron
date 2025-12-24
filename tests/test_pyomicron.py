@@ -117,10 +117,11 @@ class TestPyOmicronBasic(unittest.TestCase):
         try:
             from asimov_pyomicron import PyOmicron
             self.assertIsNotNone(PyOmicron)
-        except ImportError as e:
+        except ModuleNotFoundError as e:
             # If asimov is not installed, that's expected
-            if "asimov" not in str(e):
-                raise
+            if e.name == "asimov":
+                self.skipTest("asimov not available")
+            raise
 
     def test_config_template_exists(self):
         """Test that the config template file exists."""
