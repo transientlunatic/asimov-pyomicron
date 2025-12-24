@@ -92,7 +92,7 @@ Alternative state definition (if not using `state_flag`):
 ## Dependencies
 
 - `asimov>=0.5`
-- `pyomicron>=3.0`
+- `pyomicron>=2.0`
 - `liquid>=4.0`
 - Python >= 3.9
 

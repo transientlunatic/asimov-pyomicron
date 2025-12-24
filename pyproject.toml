@@ -11,7 +11,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "asimov>=0.5",
-    "pyomicron>=3.0",
+    "pyomicron>=2.0",
     "liquid>=4.0",
 ]
 
