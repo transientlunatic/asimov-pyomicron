@@ -21,8 +21,8 @@ dev = [
     "pytest-cov",
 ]
 docs = [
-    "sphinx>=5.0",
-    "sphinx-multiversion>=0.2.4",
+    "sphinx>=5.0,<7.0",
+    "sphinx-multiversion>=0.2.4,<1.0",
     "kentigern",
     "sphinx-rtd-theme",
 ]

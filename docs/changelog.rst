@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Version 0.1.0 (TBD)
--------------------
+Version 0.1.0 (Unreleased)
+--------------------------
 
 Initial release of asimov-pyomicron.
 
