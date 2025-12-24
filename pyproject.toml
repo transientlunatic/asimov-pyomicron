@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "asimov-pyomicron"
+version = "0.1.0"
+description = "Asimov plugin for PyOmicron"
+authors = [{ name = "Daniel Williams", email = "daniel.williams@glasgow.ac.uk" }]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "asimov>=0.5",
+    "pyomicron>=3.0",
+    "liquid>=4.0",
+]
+
+[project.entry-points."asimov.pipelines"]
+pyomicron = "asimov_pyomicron:PyOmicron"
+
+[tool.setuptools]
+packages = ["asimov_pyomicron"]
+
+[tool.setuptools.package-data]
+asimov_pyomicron = ["*.ini"]
