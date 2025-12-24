@@ -119,7 +119,7 @@ class TestPyOmicronBasic(unittest.TestCase):
             self.assertIsNotNone(PyOmicron)
         except ModuleNotFoundError as e:
             # If asimov is not installed, that's expected
-            if e.name == "asimov":
+            if "asimov" in str(e):
                 self.skipTest("asimov not available")
             raise
 

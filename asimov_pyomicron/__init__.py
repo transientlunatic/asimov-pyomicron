@@ -11,7 +11,19 @@ try:
 except (ImportError, ModuleNotFoundError):
     asimov_config = None
 
-from asimov.pipeline import Pipeline
+try:
+    from asimov.pipeline import Pipeline
+except (ImportError, ModuleNotFoundError):
+    # Create a minimal Pipeline placeholder if asimov is not installed
+    # This allows the module to be imported for introspection
+    class Pipeline:
+        """Placeholder Pipeline class when asimov is not available."""
+        @staticmethod
+        def read_ini(path):
+            import configparser
+            parser = configparser.ConfigParser()
+            parser.read(path)
+            return parser
 
 __version__ = "0.1.0"
 
@@ -63,6 +75,18 @@ class PyOmicron(Pipeline):
             return "\n\t".join(parts)
         return ""
 
+    def _get_channel_list(self):
+        """Get a list of channel names from the channel_names property.
+        
+        Returns:
+            list: List of non-empty channel names
+        """
+        channel_str = self.channel_names
+        if not channel_str:
+            return []
+        channels = channel_str.split("\n\t")
+        return [ch.strip() for ch in channels if ch.strip()]
+
     @property
     def frametype(self):
         """Return frame type from production.meta."""
@@ -78,17 +102,15 @@ class PyOmicron(Pipeline):
             return False
         
         # Check for typical omicron output files
-        candidates = []
-        channels = self.channel_names.split("\n\t")
+        channels = self._get_channel_list()
         for channel in channels:
-            if channel.strip():
-                channel_dir = os.path.join(rundir, channel.strip())
-                if os.path.isdir(channel_dir):
-                    # Check for any trigger files
-                    for ext in [".root", ".xml", ".h5", ".hdf5"]:
-                        trigger_files = [f for f in os.listdir(channel_dir) if f.endswith(ext)]
-                        if trigger_files:
-                            return True
+            channel_dir = os.path.join(rundir, channel)
+            if os.path.isdir(channel_dir):
+                # Check for any trigger files
+                for ext in [".root", ".xml", ".h5", ".hdf5"]:
+                    trigger_files = [f for f in os.listdir(channel_dir) if f.endswith(ext)]
+                    if trigger_files:
+                        return True
         return False
 
     def build_dag(self):
@@ -194,16 +216,14 @@ class PyOmicron(Pipeline):
             return assets
         
         # Collect trigger files from channel directories
-        channels = self.channel_names.split("\n\t")
+        channels = self._get_channel_list()
         for channel in channels:
-            if not channel.strip():
-                continue
-            channel_dir = os.path.join(rundir, channel.strip())
+            channel_dir = os.path.join(rundir, channel)
             if os.path.isdir(channel_dir):
                 for fname in os.listdir(channel_dir):
                     fpath = os.path.join(channel_dir, fname)
                     if os.path.isfile(fpath):
-                        assets[f"{channel.strip()}/{fname}"] = fpath
+                        assets[f"{channel}/{fname}"] = fpath
         
         # Collect log files
         for fname in [
