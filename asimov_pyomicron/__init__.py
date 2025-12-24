@@ -93,6 +93,86 @@ class PyOmicron(Pipeline):
         data = self.production.meta.get("data", {})
         return data.get("frametype", data.get("frame type", ""))
 
+    def _get_omicron_param(self, key, default=None):
+        """Helper to get omicron parameters supporting both hyphenated and underscore names.
+        
+        Args:
+            key: Parameter name (will try both hyphenated and underscore versions)
+            default: Default value if parameter not found
+            
+        Returns:
+            Parameter value or default
+        """
+        omicron = self.production.meta.get("omicron", {})
+        # Try hyphenated version first (blueprint style)
+        hyphenated = key.replace("_", "-")
+        if hyphenated in omicron:
+            return omicron[hyphenated]
+        # Try underscore version (Python style)
+        if key in omicron:
+            return omicron[key]
+        return default
+
+    @property
+    def chunk_duration(self):
+        """Get chunk duration parameter."""
+        return self._get_omicron_param("chunk_duration", 124)
+
+    @property
+    def segment_duration(self):
+        """Get segment duration parameter."""
+        return self._get_omicron_param("segment_duration", 64)
+
+    @property
+    def overlap_duration(self):
+        """Get overlap duration parameter."""
+        return self._get_omicron_param("overlap_duration", 4)
+
+    @property
+    def frequency_range(self):
+        """Get frequency range parameter."""
+        return self._get_omicron_param("frequency_range", "4.0 8192.0")
+
+    @property
+    def q_range(self):
+        """Get q-range parameter."""
+        return self._get_omicron_param("q_range", "3.3166 150")
+
+    @property
+    def mismatch_max(self):
+        """Get mismatch-max parameter."""
+        return self._get_omicron_param("mismatch_max")
+
+    @property
+    def snr_threshold(self):
+        """Get SNR threshold parameter."""
+        return self._get_omicron_param("snr_threshold")
+
+    @property
+    def sample_frequency(self):
+        """Get sample frequency parameter."""
+        return self._get_omicron_param("sample_frequency")
+
+    @property
+    def state_flag(self):
+        """Get state flag parameter."""
+        return self._get_omicron_param("state_flag")
+
+    @property
+    def state_channel(self):
+        """Get state channel parameter."""
+        return self._get_omicron_param("state_channel")
+
+    @property
+    def state_frametype(self):
+        """Get state frametype parameter."""
+        return self._get_omicron_param("state_frametype")
+
+    @property
+    def state_bits(self):
+        """Get state bits parameter."""
+        return self._get_omicron_param("state_bits")
+
     def detect_completion(self):
         """
         Check for the production of trigger files to signal that a job has been completed.

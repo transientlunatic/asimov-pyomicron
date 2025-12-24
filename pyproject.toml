@@ -15,6 +15,18 @@ dependencies = [
     "liquid>=4.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+]
+docs = [
+    "sphinx>=5.0",
+    "sphinx-multiversion>=0.2.4",
+    "kentigern",
+    "sphinx-rtd-theme",
+]
+
 [project.entry-points."asimov.pipelines"]
 pyomicron = "asimov_pyomicron:PyOmicron"
 

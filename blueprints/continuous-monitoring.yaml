@@ -1,0 +1,24 @@
+kind: analysis
+name: continuous-monitoring
+pipeline: pyomicron
+comment: Continuous omicron monitoring for detector characterization
+data:
+  channels:
+    H1: H1:GDS-CALIB_STRAIN
+    L1: L1:GDS-CALIB_STRAIN
+    V1: V1:Hrec_hoft_16384Hz
+  frametype: H1_HOFT_C00
+omicron:
+  chunk-duration: 124
+  segment-duration: 64
+  overlap-duration: 4
+  frequency-range: 4.0 8192.0
+  q-range: 3.3166 150
+  snr-threshold: 5.0
+  sample-frequency: 16384
+  online: true
+scheduler:
+  accounting-group: ligo.prod.o4.detchar.transient.omicron
+  cpus: 1
+  memory: 4096MB
+  disk: 4096MB
