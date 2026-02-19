@@ -289,22 +289,40 @@ class PyOmicron(Pipeline):
     def collect_assets(self):
         """
         Collect all of the output assets for this job.
+
+        Returns a dict that includes a ``trigger list`` key mapping IFO codes
+        (e.g. ``"H1"``, ``"L1"``) to lists of trigger file paths.  This is
+        the standard key that downstream analyses (e.g. asimov-pastro) use to
+        locate glitch trigger files.
         """
         assets = {}
         rundir = getattr(self.production, "rundir", None)
         if not rundir or not os.path.isdir(rundir):
             return assets
-        
-        # Collect trigger files from channel directories
+
+        trigger_extensions = {".root", ".xml", ".h5", ".hdf5"}
+
+        # Collect trigger files from channel directories, grouped by IFO.
+        # Channel names look like "H1:GDS-CALIB_STRAIN"; the IFO is the
+        # two-character prefix before the colon.
         channels = self._get_channel_list()
+        trigger_list = {}
         for channel in channels:
+            ifo = channel.split(":")[0] if ":" in channel else channel[:2]
             channel_dir = os.path.join(rundir, channel)
-            if os.path.isdir(channel_dir):
-                for fname in os.listdir(channel_dir):
-                    fpath = os.path.join(channel_dir, fname)
-                    if os.path.isfile(fpath):
-                        assets[f"{channel}/{fname}"] = fpath
-        
+            if not os.path.isdir(channel_dir):
+                continue
+            for fname in os.listdir(channel_dir):
+                fpath = os.path.join(channel_dir, fname)
+                if not os.path.isfile(fpath):
+                    continue
+                assets[f"{channel}/{fname}"] = fpath
+                if os.path.splitext(fname)[1] in trigger_extensions:
+                    trigger_list.setdefault(ifo, []).append(fpath)
+
+        if trigger_list:
+            assets["trigger list"] = trigger_list
+
         # Collect log files
         for fname in [
             f"{self.production.name}.log",
@@ -314,7 +332,7 @@ class PyOmicron(Pipeline):
             fpath = os.path.join(rundir, fname)
             if os.path.exists(fpath):
                 assets[fname] = fpath
-        
+
         return assets
 
     def after_completion(self):
