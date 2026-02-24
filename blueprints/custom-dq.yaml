@@ -1,0 +1,22 @@
+kind: analysis
+name: custom-dq-omicron
+pipeline: pyomicron
+comment: Omicron with custom data quality flags
+data:
+  gps-start-time: 1234567890
+  gps-end-time: 1234568890
+  channels:
+    H1: H1:GDS-CALIB_STRAIN
+  frametype: H1_HOFT_C00
+omicron:
+  chunk-duration: 124
+  segment-duration: 64
+  overlap-duration: 4
+  frequency-range: 10.0 2048.0
+  q-range: 3.3166 100
+  snr-threshold: 6.0
+  state-flag: H1:DMT-ANALYSIS_READY:1
+scheduler:
+  cpus: 1
+  memory: 2048MB
+  disk: 2048MB

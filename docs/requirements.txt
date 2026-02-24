@@ -1,0 +1,4 @@
+sphinx>=5.0
+sphinx-multiversion>=0.2.4
+kentigern
+sphinx-rtd-theme
